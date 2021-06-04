@@ -1,4 +1,4 @@
-package com.kuzin.testTask.entity;
+package com.kuzin.testTask.entities;
 
 
 import lombok.Data;
