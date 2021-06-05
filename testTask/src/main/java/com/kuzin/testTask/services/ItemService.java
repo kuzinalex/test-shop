@@ -116,18 +116,19 @@ public class ItemService {
     }
 
 
-    public void tryToUpdateItem(Item item, Long id) {
+    public boolean tryToUpdateItem(Item item, Long id) {
         List<Cart> carts = cartRepository.findAll();
         Item updatingItem = getById(id);
 
         for (Cart cart : carts
         ) {
             if (cart.getItems().contains(updatingItem)) {
-                System.out.println("Some users have add this item into their carts. Use force update to update it.");
-                return;
+                //System.out.println("Some users have add this item into their carts. Use force update to update it.");
+                return false;
             }
         }
         updateItem(item, id);
+        return true;
     }
 
 

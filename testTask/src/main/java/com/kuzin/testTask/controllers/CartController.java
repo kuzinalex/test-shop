@@ -41,12 +41,12 @@ public class CartController {
 
 
     @PostMapping("/cart/buy")
-    public ResponseEntity<Item> buy(Principal principal){
+    public ResponseEntity<String> buy(Principal principal){
         if ( cartService.buy(principal)){
             return new ResponseEntity<>(HttpStatus.OK);
         }else{
-            System.out.println("Your cart is empty!");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            //System.out.println("Your cart is empty!");
+            return ResponseEntity.badRequest().body("Your cart is empty!");
         }
 
 

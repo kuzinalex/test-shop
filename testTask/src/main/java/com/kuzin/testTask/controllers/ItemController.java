@@ -50,9 +50,13 @@ public class ItemController {
 
 
     @PatchMapping("/items/{id}")
-    public ResponseEntity<Item> updateItem(@RequestBody Item item, @PathVariable Long id) {
-        itemService.tryToUpdateItem(item, id);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<String> updateItem(@RequestBody Item item, @PathVariable Long id) {
+       if (itemService.tryToUpdateItem(item, id)){
+           return new ResponseEntity<>(HttpStatus.OK);
+       }else {
+           return ResponseEntity.badRequest().body("Some users have add this item into their carts. Use force update to update it.");
+       }
+
     }
 
     @PatchMapping("/items/{id}/forceUpdate")
@@ -69,12 +73,12 @@ public class ItemController {
 
 
     @PostMapping("/items/{id}")
-    public ResponseEntity<Item> addItemToCart(Principal principal, @PathVariable Long id) {
+    public ResponseEntity<String> addItemToCart(Principal principal, @PathVariable Long id) {
         if (cartService.addToCart(principal, id)) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             System.out.println("Item is already in your cart!");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return  ResponseEntity.badRequest().body("Item is already in your cart!");
         }
     }
 }
