@@ -32,9 +32,9 @@ public class RegistrationController {
     }
 
     @PostMapping("/user/signUp")
-    public ResponseEntity<User> signUp(@RequestBody User user) {
+    public ResponseEntity<String> signUp(@RequestBody User user) {
         if (userService.getByUsername(user.getUsername()) != null | userService.getByEmail(user.getEmail()) != null | user.getUsername().contains(" ")) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return  ResponseEntity.badRequest().body("User already exists.");
         } else {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
             user.setRoles(new ArrayList<>());
