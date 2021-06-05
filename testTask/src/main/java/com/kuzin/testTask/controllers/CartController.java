@@ -42,8 +42,14 @@ public class CartController {
 
     @PostMapping("/cart/buy")
     public ResponseEntity<Item> buy(Principal principal){
-        cartService.buy(principal);
-        return new ResponseEntity<>(HttpStatus.OK);
+        if ( cartService.buy(principal)){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else{
+            System.out.println("Your cart is empty!");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+
     }
 
 }

@@ -19,10 +19,11 @@ public class EmailService {
     }
 
 
-    public void sendSimpleMessage(String to, String username, List<Item> items) {
+    public void sendShoppingListMessage(String to, String username, List<Item> items) {
         SimpleMailMessage message = new SimpleMailMessage();
 
-        String text = generateMessage(username, items);
+        String text = generateShoppingListMessage(username, items);
+
 
         message.setFrom("dealer-statistics@yandex.by");
         message.setTo(to);
@@ -31,11 +32,36 @@ public class EmailService {
         javaMailSender.send(message);
     }
 
-    private String generateMessage(String username, List<Item> items) {
-        StringBuilder message = new StringBuilder("Dear "+username+", thank you for your purchase!\n\nYour shopping list:\n");
+
+    public void sendUpdatedItemsMessage(String to, String username, Item item) {
+
+        SimpleMailMessage message = new SimpleMailMessage();
+
+        String text = generateUpdatedItemsMessage(username, item);
+
+
+        message.setFrom("dealer-statistics@yandex.by");
+        message.setTo(to);
+        message.setSubject("Your cart has been updated");
+        message.setText(text);
+        javaMailSender.send(message);
+    }
+
+    private String generateUpdatedItemsMessage(String username, Item item) {
+
+        StringBuilder message = new StringBuilder("Dear " + username + ", some items in your cart has been changed.\n");
+        message.append(item.getName() + " - " + item.getDescription() + " has been changed.\n");
+
+        return message.toString();
+    }
+
+
+    private String generateShoppingListMessage(String username, List<Item> items) {
+
+        StringBuilder message = new StringBuilder("Dear " + username + ", thank you for your purchase!\n\nYour shopping list:\n");
         for (Item item : items
         ) {
-            message.append(String.valueOf(items.indexOf(item) + ". " + item.getName()+" - "+item.getDescription() + ".\n"));
+            message.append(String.valueOf(items.indexOf(item) + 1 + ". " + item.getName() + " - " + item.getDescription() + ".\n"));
         }
         return message.toString();
     }

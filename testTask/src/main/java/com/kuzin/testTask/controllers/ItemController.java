@@ -45,16 +45,21 @@ public class ItemController {
     @PostMapping("/items")
     public ResponseEntity<Item> addItem(@RequestBody Item item) {
         itemService.saveItem(item);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 
     @PatchMapping("/items/{id}")
     public ResponseEntity<Item> updateItem(@RequestBody Item item, @PathVariable Long id) {
-        itemService.updateItem(item, id);
+        itemService.tryToUpdateItem(item, id);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    @PatchMapping("/items/{id}/forceUpdate")
+    public ResponseEntity<Item> forceUpdateItem(@RequestBody Item item, @PathVariable Long id) {
+        itemService.forceUpdate(item, id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @DeleteMapping("/items/{id}")
     public ResponseEntity<Item> deleteItem(@PathVariable Long id) {
@@ -68,6 +73,7 @@ public class ItemController {
         if (cartService.addToCart(principal, id)) {
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
+            System.out.println("Item is already in your cart!");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }

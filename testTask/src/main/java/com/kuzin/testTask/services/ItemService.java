@@ -1,10 +1,11 @@
 package com.kuzin.testTask.services;
 
+import com.kuzin.testTask.entities.Cart;
 import com.kuzin.testTask.entities.Item;
 import com.kuzin.testTask.entities.Tag;
+import com.kuzin.testTask.repositories.CartRepository;
 import com.kuzin.testTask.repositories.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,14 +15,18 @@ import java.util.stream.Collectors;
 @Service
 public class ItemService {
 
+    private EmailService emailService;
     private TagService tagService;
     private ItemRepository itemRepository;
+    private CartRepository cartRepository;
 
     @Autowired
-    public ItemService(ItemRepository itemRepository, TagService tagService) {
+    public ItemService(EmailService emailService, ItemRepository itemRepository, TagService tagService, CartRepository cartRepository) {
+        this.emailService = emailService;
 
         this.itemRepository = itemRepository;
         this.tagService = tagService;
+        this.cartRepository = cartRepository;
     }
 
 
@@ -84,7 +89,9 @@ public class ItemService {
                 if (tagService.getByName(tag.getName()) == null) {
                     tagService.addTag(tag);
                 }
-                list.add(tagService.getByName(tag.getName()));
+                if (!existingItem.getTags().contains(tagService.getByName(tag.getName()))) {
+                    list.add(tagService.getByName(tag.getName()));
+                }
             }
 
             existingItem.getTags().addAll(list);
@@ -94,6 +101,46 @@ public class ItemService {
 
 
     public void deleteItem(Long id) {
+        List<Cart> carts = cartRepository.findAll();
+        Item deletingItem = getById(id);
+
+        for (Cart cart : carts
+        ) {
+            if (cart.getItems().contains(deletingItem)) {
+                emailService.sendUpdatedItemsMessage(cart.getUser().getEmail(), cart.getUser().getUsername(), deletingItem);
+                cart.getItems().remove(deletingItem);
+            }
+        }
+
         itemRepository.deleteById(id);
+    }
+
+
+    public void tryToUpdateItem(Item item, Long id) {
+        List<Cart> carts = cartRepository.findAll();
+        Item updatingItem = getById(id);
+
+        for (Cart cart : carts
+        ) {
+            if (cart.getItems().contains(updatingItem)) {
+                System.out.println("Some users have add this item into their carts. Use force update to update it.");
+                return;
+            }
+        }
+        updateItem(item, id);
+    }
+
+
+    public void forceUpdate(Item item, Long id) {
+        List<Cart> carts = cartRepository.findAll();
+        Item updatingItem = getById(id);
+
+        for (Cart cart : carts
+        ) {
+            if (cart.getItems().contains(updatingItem)) {
+                emailService.sendUpdatedItemsMessage(cart.getUser().getEmail(), cart.getUser().getUsername(), updatingItem);
+            }
+        }
+        updateItem(item, id);
     }
 }

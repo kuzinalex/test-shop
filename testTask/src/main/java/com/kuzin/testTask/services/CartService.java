@@ -28,6 +28,11 @@ public class CartService {
     }
 
 
+    public List<Cart> getAll(){
+       return cartRepository.findAll();
+    }
+
+
     public List<Item> getCartItems(Principal principal) {
         User user = userService.getByUsername(principal.getName());
         Cart cart = getByUser(user);
@@ -75,21 +80,24 @@ public class CartService {
         Cart cart = getByUser(user);
         Item deletingItem = itemService.getById(id);
 
-        if (cart.getItems()!=null & cart.getItems().contains(deletingItem)){
+        if (cart.getItems() != null && cart.getItems().contains(deletingItem)) {
             cart.getItems().remove(deletingItem);
             save(cart);
         }
     }
 
 
-    public void buy(Principal principal){
+    public boolean buy(Principal principal) {
         User user = userService.getByUsername(principal.getName());
         Cart cart = getByUser(user);
 
-        if (cart.getItems()!=null && !cart.getItems().isEmpty()){
-            emailService.sendSimpleMessage(user.getEmail(), user.getUsername(), cart.getItems());
+        if (cart.getItems() != null && !cart.getItems().isEmpty()) {
+            emailService.sendShoppingListMessage(user.getEmail(), user.getUsername(), cart.getItems());
             cart.getItems().clear();
             save(cart);
+            return true;
+        } else {
+            return false;
         }
     }
 }

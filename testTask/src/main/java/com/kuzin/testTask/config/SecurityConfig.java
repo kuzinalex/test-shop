@@ -4,6 +4,7 @@ import com.kuzin.testTask.repositories.UserRepository;
 import com.kuzin.testTask.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -22,12 +23,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/items/**").hasRole("USER")
+                .antMatchers(HttpMethod.GET,"/items").hasAnyRole("USER","ADMIN")
+                .antMatchers(HttpMethod.POST,"/items").hasRole("ADMIN")
+                .antMatchers(HttpMethod.GET,"/items/{id}").hasAnyRole("USER","ADMIN")
+                .antMatchers(HttpMethod.PATCH,"/items/{id}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.DELETE,"/items/{id}").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST,"/items/{id}").hasRole("USER")
+                .antMatchers(HttpMethod.PATCH,"/items/{id}/forceUpdate").hasRole("ADMIN")
                 .antMatchers("/cart/**").hasRole("USER")
                 .and()
-                .httpBasic()
-                .and()
-                .logout().logoutSuccessUrl("/");
+                .httpBasic();
     }
 
     @Bean
