@@ -33,17 +33,22 @@ public class RegistrationController {
 
     @PostMapping("/user/signUp")
     public ResponseEntity<String> signUp(@RequestBody User user) {
-        if (userService.getByUsername(user.getUsername()) != null | userService.getByEmail(user.getEmail()) != null | user.getUsername().contains(" ")) {
-            return  ResponseEntity.badRequest().body("User already exists.");
-        } else {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
-            user.setRoles(new ArrayList<>());
-            user.getRoles().add(roleService.getByName("ROLE_USER"));
-            userService.addUser(user);
-            Cart cart=new Cart();
-            cart.setUser(userService.getByUsername(user.getUsername()));
-            cartService.save(cart);
+//        if (userService.getByUsername(user.getUsername()) != null | userService.getByEmail(user.getEmail()) != null | user.getUsername().contains(" ")) {
+//            return  ResponseEntity.badRequest().body("User already exists.");
+//        } else {
+//            user.setPassword(passwordEncoder.encode(user.getPassword()));
+//            user.setRoles(new ArrayList<>());
+//            user.getRoles().add(roleService.getByName("ROLE_USER"));
+//            userService.addUser(user);
+//            Cart cart=new Cart();
+//            cart.setUser(userService.getByUsername(user.getUsername()));
+//            cartService.save(cart);
+//            return new ResponseEntity<>(HttpStatus.CREATED);
+//        }
+        if (userService.addUser(user)){
             return new ResponseEntity<>(HttpStatus.CREATED);
+        }else {
+            return ResponseEntity.badRequest().body("User already exists.");
         }
     }
 
