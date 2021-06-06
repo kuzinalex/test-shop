@@ -72,13 +72,13 @@ public class UserServiceTest {
     public void getById() {
         Mockito.doReturn(new User())
                 .when(userRepository)
-                .getById(1L);
+                .getById(Mockito.anyLong());
 
         Assert.assertEquals(new User(), userService.getById(1L));
 
         Mockito.doReturn(null)
                 .when(userRepository)
-                .getById(2L);
+                .getById(Mockito.anyLong());
 
         Assert.assertNull(userService.getById(2L));
     }
