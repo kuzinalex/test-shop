@@ -75,7 +75,7 @@ public class CartService {
     }
 
 
-    public void deleteFromCart(Long id,Principal principal){
+    public boolean deleteFromCart(Long id,Principal principal){
         User user = userService.getByUsername(principal.getName());
         Cart cart = getByUser(user);
         Item deletingItem = itemService.getById(id);
@@ -83,6 +83,9 @@ public class CartService {
         if (cart.getItems() != null && cart.getItems().contains(deletingItem)) {
             cart.getItems().remove(deletingItem);
             save(cart);
+            return true;
+        }else {
+            return false;
         }
     }
 

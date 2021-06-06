@@ -2,8 +2,6 @@ package com.kuzin.testTask.controllers;
 
 import com.kuzin.testTask.entities.Item;
 import com.kuzin.testTask.services.CartService;
-import com.kuzin.testTask.services.ItemService;
-import com.kuzin.testTask.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,15 +13,11 @@ import java.util.List;
 @RestController
 public class CartController {
 
-    private UserService userService;
     private CartService cartService;
-    private ItemService itemService;
 
     @Autowired
-    public CartController(UserService userService, CartService cartService, ItemService itemService) {
-        this.userService = userService;
+    public CartController(CartService cartService) {
         this.cartService = cartService;
-        this.itemService = itemService;
     }
 
 
@@ -34,9 +28,13 @@ public class CartController {
 
 
     @DeleteMapping("/cart/{id}")
-    public ResponseEntity<Item> deleteFromCart(@PathVariable Long id, Principal principal) {
-        cartService.deleteFromCart(id, principal);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<String> deleteFromCart(@PathVariable Long id, Principal principal) {
+        if (cartService.deleteFromCart(id, principal)){
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            return ResponseEntity.badRequest().body("No such item in cart");
+        }
+
     }
 
 
@@ -45,7 +43,6 @@ public class CartController {
         if ( cartService.buy(principal)){
             return new ResponseEntity<>(HttpStatus.OK);
         }else{
-            //System.out.println("Your cart is empty!");
             return ResponseEntity.badRequest().body("Your cart is empty!");
         }
 

@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -51,26 +49,24 @@ public class UserService implements UserDetailsService {
             user.setRoles(new ArrayList<>());
             user.getRoles().add(roleRepository.getByName("ROLE_USER"));
             userRepository.save(user);
-            Cart cart=new Cart();
+            Cart cart = new Cart();
             cart.setUser(getByUsername(user.getUsername()));
             cartRepository.save(cart);
             return true;
         }
     }
 
-    public Optional<User> getById(Long id) {
-        return userRepository.findById(id);
+
+    public User getById(Long id) {
+        return userRepository.getById(id);
     }
 
-    public List<User> getAll() {
-        return userRepository.findAll();
-    }
 
-    public User getByUsername(String username){
+    public User getByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
-    public User getByEmail(String email){
+    public User getByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
