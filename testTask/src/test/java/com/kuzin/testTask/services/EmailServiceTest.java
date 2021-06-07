@@ -1,6 +1,7 @@
 package com.kuzin.testTask.services;
 
 import com.kuzin.testTask.entities.Item;
+import com.kuzin.testTask.services.EmailService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
